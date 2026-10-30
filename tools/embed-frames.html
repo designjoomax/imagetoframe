@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Update Frame - JOOMAX SITE</title>
+<style>
+  body{margin:0;border-top:4px solid #e60020;font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;background:#fafafa;color:#1b1b1d}
+  main{max-width:640px;margin:0 auto;padding:32px 20px}
+  h1{margin:0 0 8px;font-size:1.6rem}
+  p,li{color:#555}
+  .drop{display:block;text-align:center;padding:28px 16px;border:2px dashed #d5d5da;border-radius:12px;cursor:pointer;margin:20px 0}
+  .drop:hover,.drop.over{border-color:#e60020}
+  ul.files{list-style:none;padding:0;display:grid;gap:8px}
+  ul.files li{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #e4e4e8;border-radius:10px;padding:8px 12px;color:#1b1b1d}
+  ul.files img{width:40px;height:40px;object-fit:contain}
+  ul.files span{margin-left:auto;color:#777;font-size:.85rem}
+  button{border:0;border-radius:8px;padding:11px 18px;font:inherit;font-weight:600;background:#e60020;color:#fff;cursor:pointer}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  .note{font-size:.88rem}
+</style>
+</head>
+<body>
+<main>
+  <h1>Update frame</h1>
+  <p>Alternatif untuk <code>update-frames.bat</code> (cocok untuk Mac/Linux). Hasilnya sama.</p>
+  <ol>
+    <li>Pilih semua file <code>.png</code> dari folder <code>assets/frame/</code>.</li>
+    <li>Klik <strong>Download frames.js &amp; frames-data.js</strong>.</li>
+    <li>Simpan kedua file ke folder <code>js/</code> dan timpa yang lama.</li>
+  </ol>
+  <label class="drop" id="drop" for="f"><strong>Pilih file frame</strong> atau tarik ke sini</label>
+  <input id="f" type="file" accept="image/png" multiple hidden>
+  <ul class="files" id="list"></ul>
+  <button id="go" type="button" disabled>Download frames.js &amp; frames-data.js</button>
+  <p class="note">Nama file menentukan urutan dan nama: <code>1 Frame Joomax.png</code> tampil sebagai "Frame Joomax" di urutan 1. Tanpa angka di depan, frame ditaruh paling akhir.</p>
+</main>
+<script>
+  const files = {}, list = document.getElementById("list"), go = document.getElementById("go"), drop = document.getElementById("drop");
+  const read = (f) => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(f); });
+  const parse = (fn) => { const base = fn.replace(/\.png$/i, ""), m = base.match(/^\s*(\d+)[\s._-]+(.+)$/);
+    return m ? { order: +m[1], name: m[2].trim() } : { order: 1e9, name: base }; };
+  const sorted = () => Object.keys(files).map((file) => ({ file, ...parse(file) }))
+    .sort((a, b) => a.order - b.order || a.name.localeCompare(b.name, undefined, { numeric: true }));
+  function paint() {
+    list.innerHTML = "";
+    sorted().forEach((it, i) => {
+      const li = document.createElement("li"), im = new Image(), st = document.createElement("strong"), sp = document.createElement("span");
+      im.alt = ""; im.src = files[it.file]; st.textContent = `${i + 1}. ${it.name}`; sp.textContent = it.file;
+      li.append(im, st, sp); list.appendChild(li);
+    });
+    go.disabled = !Object.keys(files).length;
+  }
+  async function add(picked) {
+    for (const f of picked.filter((x) => /\.png$/i.test(x.name))) files[f.name] = await read(f);
+    paint();
+  }
+  document.getElementById("f").onchange = (e) => { const p = [...e.target.files]; e.target.value = ""; add(p); };
+  ["dragenter", "dragover"].forEach((t) => drop.addEventListener(t, (e) => { e.preventDefault(); drop.classList.add("over"); }));
+  ["dragleave", "drop"].forEach((t) => drop.addEventListener(t, (e) => { e.preventDefault(); drop.classList.remove("over"); }));
+  drop.addEventListener("drop", (e) => add([...e.dataTransfer.files]));
+  const save = (name, text) => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text], { type: "text/javascript" })); a.download = name; a.click(); };
+  go.onclick = () => {
+    const items = sorted(), head = "// Dibuat otomatis oleh tools/embed-frames.html. Jangan diedit manual.\n";
+    save("frames.js", head + "window.JOOMAX_FRAMES = " + JSON.stringify(items.map(({ name, file }) => ({ name, file })), null, 2) + ";\n");
+    setTimeout(() => save("frames-data.js", head + "window.JOOMAX_FRAME_DATA = " + JSON.stringify(Object.fromEntries(items.map((i) => [i.file, files[i.file]]))) + ";\n"), 400);
+  };
+</script>
+</body>
+</html>

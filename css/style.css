@@ -1,0 +1,108 @@
+/* Aplikasi Frame Image: hanya isi halaman. Header/footer dan widget dimuat dari repo headerfooter dan widget. */
+[hidden]{display:none !important}
+:root{
+  --bg:#fff; --panel:#f6f6f7; --card:#fff; --ink:#141416; --muted:#8a8a92; --line:#e6e6ea; --dash:#d6d6dc;
+  --accent:#e60020; --accent-ink:#fff;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f0f12; --panel:#17171b; --card:#1f1f24; --ink:#f3f3f5; --muted:#9a9aa3; --line:#2c2c33; --dash:#3a3a42; --accent:#ff3d55; --accent-ink:#0f0f12;}}
+:root[data-theme="dark"]{--bg:#0f0f12; --panel:#17171b; --card:#1f1f24; --ink:#f3f3f5; --muted:#9a9aa3; --line:#2c2c33; --dash:#3a3a42; --accent:#ff3d55; --accent-ink:#0f0f12;}
+*,*::before,*::after{box-sizing:inherit}
+/* 84px = tinggi header sticky, supaya link #anchor tidak tertutup header */
+html{scroll-padding-top:calc(84px + env(safe-area-inset-top,0px))}
+fixs-widget{--fixs-bg:#111116} /* samakan dengan warna footer */
+joomax-header:not(:defined){display:block;min-height:69px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Poppins",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+
+.warn{width:min(1500px,calc(100% - 40px));margin:0 auto 14px;padding:12px 14px;border-radius:10px;border:1px solid var(--accent);font-size:.88rem}
+
+.panel{width:min(1500px,calc(100% - 40px));margin:28px auto 64px;background:var(--panel);border-radius:22px;padding:34px 30px 40px}
+h1{margin:0;text-align:center;font-size:clamp(2rem,4.5vw,2.9rem);font-weight:700;line-height:1.15}
+.sub{margin:6px 0 0;text-align:center;color:var(--muted)}
+.layout{display:grid;grid-template-columns:220px minmax(0,1fr) 390px;gap:24px;margin-top:34px;align-items:start}
+.card{background:var(--card);border-radius:16px;padding:16px}
+
+/* kiri: frame */
+.side-l{display:flex;min-height:0;height:560px;flex-direction:column}
+.side-l h2{margin:2px 0 14px;text-align:center;font-size:.95rem;font-weight:600}
+.frames{display:grid;flex:1;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;min-height:0;overflow-x:hidden;overflow-y:auto;padding:2px}
+.frame{display:flex;flex-direction:column;gap:8px;border:1px solid var(--line);border-radius:12px;background:#fff;padding:6px;cursor:pointer;transition:border-color .15s ease, box-shadow .15s ease}
+.frame img{display:block;width:100%;aspect-ratio:1;object-fit:contain;border-radius:8px}
+.frame-name{display:block;padding-top:6px;border-top:1px solid var(--line);color:var(--ink);font-size:.75rem;font-weight:600;line-height:1.35;text-align:center;display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
+.frame[aria-checked="true"]{border-color:var(--accent);box-shadow:0 0 0 1px rgba(33,127,255,.12)}
+.frames .muted{margin:0;text-align:center;color:var(--muted);font-size:.82rem}
+.chk{display:flex;align-items:center;gap:8px;font-size:.85rem;cursor:pointer;margin-top:14px}
+.chk input{accent-color:var(--accent);width:16px;height:16px}
+.hint{margin:8px 0 0;font-size:.74rem;color:var(--muted)}
+
+/* tengah: upload + grid */
+.center{display:flex;flex-direction:column;gap:10px;min-height:560px;border-radius:16px}
+.center.over{outline:2px dashed var(--accent);outline-offset:4px}
+.drop{flex:1;min-height:520px;display:grid;place-content:center;gap:4px;text-align:center;border:2px dashed var(--dash);border-radius:16px;background:var(--bg);cursor:pointer}
+.drop strong{color:var(--accent);font-size:.92rem;font-weight:600}
+.drop span{font-size:.95rem}
+.drop small{color:var(--muted);font-size:.72rem}
+.drop:hover,.drop:focus-within{border-color:var(--accent)}
+.status{margin:0;text-align:center;color:var(--muted);font-size:.85rem}
+.status:empty{display:none}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px;align-content:start}
+.grid[data-n="one"]{grid-template-columns:minmax(0,640px);justify-content:center}
+.tile{position:relative;border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 0 0 1px var(--line);cursor:pointer}
+.tile canvas{display:block;width:100%;height:auto;-webkit-user-select:none;user-select:none}
+.tile.sel,.tile.over{box-shadow:0 0 0 3px var(--accent)}
+.tile.dragging{opacity:.4}
+.tile:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.badge{position:absolute;left:8px;bottom:8px;min-width:26px;height:26px;padding:0 6px;border-radius:13px;background:var(--accent);color:var(--accent-ink);font-size:.8rem;font-weight:600;display:grid;place-items:center}
+.x{position:absolute;right:8px;top:8px;width:26px;height:26px;border:0;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;font-size:1rem;line-height:1;cursor:pointer}
+.tile.add{display:grid;place-items:center;align-content:center;gap:2px;aspect-ratio:1;background:transparent;box-shadow:none;border:2px dashed var(--dash);color:var(--muted);font-size:.85rem;text-align:center}
+.tile.add b{font-size:1.6rem;font-weight:500;color:var(--accent)}
+.grid[data-n="one"] .tile.add{aspect-ratio:auto;padding:12px}
+
+/* kanan: editor */
+.side-r{display:grid;gap:14px}
+.editor{display:grid;gap:12px}
+.edstage{border-radius:12px;overflow:hidden;background:#fff;touch-action:none;cursor:grab;box-shadow:0 0 0 1px var(--line)}
+.edstage:active{cursor:grabbing}
+.edstage canvas{display:block;width:100%;height:auto;-webkit-user-select:none;user-select:none}
+.edstage:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.zoom{display:flex;align-items:center;gap:8px}
+.zoom input[type=range],.blurctl input[type=range]{flex:1;min-width:0;accent-color:var(--accent)}
+input[type=text]{flex:none;width:52px;height:34px;padding:0;text-align:center;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--ink);font:inherit;font-size:.9rem}
+.ico{border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:8px;min-width:34px;height:34px;font:inherit;cursor:pointer;padding:0 8px}
+.ico:disabled{opacity:.35;cursor:default}
+.tools{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.tool{height:36px;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:8px;font:inherit;font-size:.74rem;cursor:pointer;white-space:nowrap}
+.tool[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.editor .chk{margin-top:0}
+.blurctl{display:flex;align-items:center;gap:8px}
+.blurctl span{font-size:.85rem;color:var(--muted)}
+.pill{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;height:28px;padding:0 10px;font:inherit;font-size:.74rem;cursor:pointer;white-space:nowrap}
+.pill.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.order{display:flex;align-items:center;justify-content:space-between;font-size:.85rem}
+.order div{display:flex;align-items:center;gap:10px}
+.order b{min-width:3ch;text-align:center;font-weight:600}
+.name{font-size:.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.meta{font-size:.78rem;color:var(--muted);min-height:1.2em;margin-top:-8px}
+.acts{display:flex;gap:8px}
+.acts .btn:first-child{flex:1}
+.btn{border:0;border-radius:8px;padding:10px 14px;font:inherit;font-weight:600;background:var(--accent);color:var(--accent-ink);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.big{width:100%;padding:14px;font-size:1.05rem;border-radius:10px}
+.btn:disabled{opacity:.5;cursor:default}
+.link{display:block;margin:10px auto 0;border:0;background:none;color:var(--muted);font:inherit;font-size:.8rem;text-decoration:underline;cursor:pointer}
+.link:disabled{opacity:.5;cursor:default}
+.empty{margin:0;text-align:center;color:var(--muted);font-size:.85rem}
+.btn:focus-visible,.ico:focus-visible,.tool:focus-visible,.pill:focus-visible,.frame:focus-visible,.link:focus-visible,input[type=text]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+@media (max-width:1100px){
+  .layout{grid-template-columns:minmax(0,1fr)}
+  .side-l{height:auto}
+  .side-r,.editor,.center{min-width:0}
+  .frames{flex:initial;max-height:260px;overflow-x:hidden;overflow-y:auto}
+  .frame{min-width:0}
+  .drop{min-height:260px}
+  .center{min-height:0}
+  .panel{padding:26px 16px 30px}
+}

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Frame Image - Joomax Teknologi Indonesia</title>
+<link rel="icon" href="assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- Header (dari repo headerfooter) -->
+<joomax-header sticky></joomax-header>
+
+<div id="warn" class="warn" role="alert" hidden></div>
+
+<!-- Isi halaman = aplikasi Frame Image -->
+<main class="panel">
+  <h1>Frame Image</h1>
+  <p class="sub">Menambahkan Frame Pada Gambar</p>
+
+  <div class="layout">
+    <!-- Kiri: pilih frame -->
+    <aside class="card side-l">
+      <h2>Pilih Frame</h2>
+      <div id="frames" class="frames" role="radiogroup" aria-label="Pilihan frame"></div>
+      <label class="chk"><input type="checkbox" id="perFrame"> Frame berbeda tiap foto</label>
+      <p id="perHint" class="hint" hidden>Frame yang dipilih berlaku untuk foto yang sedang dipilih.</p>
+    </aside>
+
+    <!-- Tengah: upload / grid foto -->
+    <section class="center" id="stage">
+      <label id="drop" class="drop" for="file">
+        <strong>Pilih Foto</strong>
+        <span>atau tarik ke sini</span>
+        <small>Bisa Banyak Foto Sekaligus (JPG, PNG, WEBP, HEIC)</small>
+      </label>
+      <div id="grid" class="grid" hidden>
+        <label id="addTile" class="tile add" for="file"><b>+</b> Tambah foto</label>
+      </div>
+      <input id="file" type="file" accept="image/*,.heic,.heif" multiple hidden>
+      <p id="status" class="status" role="status"></p>
+    </section>
+
+    <!-- Kanan: pengaturan foto yang dipilih -->
+    <aside class="side-r">
+      <div class="card editor" id="editor" hidden>
+        <div class="edstage" id="edStage" tabindex="0" aria-label="Area foto: geser dengan drag atau panah, zoom dengan + dan -"><canvas id="edCanvas"></canvas></div>
+        <div class="zoom">
+          <button class="ico" type="button" data-z="-" aria-label="Zoom out">−</button>
+          <input type="range" id="zr" min="-100" max="100" step="1" aria-label="Zoom, -100 sampai 100">
+          <button class="ico" type="button" data-z="+" aria-label="Zoom in">+</button>
+          <input type="text" id="zn" inputmode="decimal" aria-label="Nilai zoom (-100 sampai 100)" title="Zoom: -100 sampai 100">
+          <button class="ico" type="button" id="zReset" aria-label="Reset posisi, zoom, rotasi" title="Reset posisi, zoom, rotasi">↺</button>
+        </div>
+        <div class="tools">
+          <button class="tool" type="button" id="rotL" title="Putar kiri 90°">↶ Kiri</button>
+          <button class="tool" type="button" id="rotR" title="Putar kanan 90°">↷ Kanan</button>
+          <button class="tool" type="button" id="flipH" aria-pressed="false" title="Balik horizontal">⇄ Flip H</button>
+          <button class="tool" type="button" id="flipV" aria-pressed="false" title="Balik vertikal">⇅ Flip V</button>
+        </div>
+        <label class="chk"><input type="checkbox" id="blOn"> Gaussian blur (background)</label>
+        <div class="blurctl" id="blCtl" hidden>
+          <input type="range" id="blR" min="0" max="100" step="1" aria-label="Radius blur">
+          <input type="text" id="blN" inputmode="decimal" aria-label="Radius blur dalam px">
+          <span>px</span>
+          <button class="pill" type="button" id="blRec" title="Radius 20 px">Rekomendasi</button>
+        </div>
+        <div class="order">
+          <span>Urutan</span>
+          <div><button class="ico" type="button" id="ordPrev" aria-label="Geser ke depan">←</button><b id="ordLbl">1/1</b><button class="ico" type="button" id="ordNext" aria-label="Geser ke belakang">→</button></div>
+        </div>
+        <div class="name" id="edName"></div>
+        <div class="meta" id="edMeta"></div>
+        <div class="acts"><button class="btn" type="button" id="edDl">Download</button><button class="btn ghost" type="button" id="edRm">Hapus</button></div>
+      </div>
+      <p class="card empty" id="edEmpty">Pilih foto untuk mengatur posisi, zoom, rotasi, dan blur.</p>
+      <div class="card bulk" id="bulk">
+        <button class="btn big" type="button" id="dlZip" disabled>Download Semua (.zip)</button>
+        <button class="link" type="button" id="dlEach" disabled>atau download satuan</button>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<!-- Footer (dari repo headerfooter) -->
+<joomax-footer></joomax-footer>
+
+<!-- Widget Fixs.Arts: watermark bawah + popup kanan bawah (dari repo widget). Taruh paling akhir. -->
+<fixs-widget></fixs-widget>
+
+<!-- Header & footer: repo headerfooter. Isi menu/footer diatur di sana (joomax-layout.config.js) -->
+<script src="https://designjoomax.github.io/headerfooter/joomax-layout.config.js"></script>
+<script src="https://designjoomax.github.io/headerfooter/joomax-layout.js"></script>
+<!-- Widget Fixs.Arts: repo widget -->
+<script src="https://designjoomax.github.io/widget/fixs-widget.js"></script>
+<!-- Aplikasi Frame Image (repo ini) -->
+<script src="js/config.js"></script>
+<script src="js/frames.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
